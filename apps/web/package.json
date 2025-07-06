@@ -10,7 +10,8 @@
     "test": "vitest run",
     "format": "biome format",
     "lint": "biome lint",
-    "check": "biome check"
+    "check": "biome check",
+    "machine-translate": "inlang machine translate --project project.inlang"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.17",
@@ -38,9 +39,11 @@
     "@tanstack/store": "^0.7.0",
     "@tuyau/client": "^0.2.9",
     "ai": "^4.1.65",
+    "api": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "highlight.js": "^11.11.1",
+    "ky": "^1.8.1",
     "lucide-react": "^0.475.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -67,6 +70,8 @@
     "typescript": "^5.7.2",
     "vite": "^6.1.0",
     "vitest": "^3.0.5",
-    "web-vitals": "^4.2.4"
+    "web-vitals": "^4.2.4",
+    "@inlang/paraglide-js": "2.2.0",
+    "@inlang/cli": "^3.0.0"
   }
 }

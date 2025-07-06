@@ -1,0 +1,18 @@
+{
+  "shared": {
+    "fields": {
+      "email": "dirección de correo electrónico",
+      "password": "contraseña",
+      "first_name": "nombre",
+      "last_name": "apellido"
+    },
+    "messages": {
+      "required": "El campo {field} es requerido",
+      "email": "El campo {field} debe ser una dirección de correo electrónico válida",
+      "string": "El campo {field} debe ser una cadena de texto",
+      "min": "El campo {field} debe tener al menos {min} caracteres",
+      "max": "El campo {field} no debe exceder {max} caracteres",
+      "confirmed": "La confirmación del campo {field} no coincide"
+    }
+  }
+} 

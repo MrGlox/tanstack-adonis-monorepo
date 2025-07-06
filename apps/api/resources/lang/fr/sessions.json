@@ -1,0 +1,14 @@
+{
+  "login": {
+    "success": "Connexion réussie",
+    "invalid_credentials": "Identifiants invalides"
+  },
+  "logout": {
+    "success": "Déconnexion réussie",
+    "error": "Erreur lors de la déconnexion"
+  },
+  "check": {
+    "not_authenticated": "Non authentifié",
+    "user_authenticated": "L'utilisateur est authentifié"
+  }
+} 

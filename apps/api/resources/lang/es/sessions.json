@@ -1,0 +1,14 @@
+{
+  "login": {
+    "success": "Inicio de sesión exitoso",
+    "invalid_credentials": "Credenciales inválidas"
+  },
+  "logout": {
+    "success": "Cierre de sesión exitoso",
+    "error": "Error durante el cierre de sesión"
+  },
+  "check": {
+    "not_authenticated": "No autenticado",
+    "user_authenticated": "Usuario está autenticado"
+  }
+} 

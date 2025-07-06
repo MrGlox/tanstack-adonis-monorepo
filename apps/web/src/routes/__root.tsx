@@ -7,6 +7,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import Header from '../components/Header'
+import { AuthProvider } from '../contexts/auth-context.tsx'
 
 import TanStackQueryLayout from '../integrations/tanstack-query/layout.tsx'
 
@@ -42,12 +43,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
   component: () => (
     <RootDocument>
-      <Header />
-
-      <Outlet />
-      <TanStackRouterDevtools />
-
-      <TanStackQueryLayout />
+      <AuthProvider>
+        <Header />
+        <Outlet />
+        <TanStackRouterDevtools />
+        <TanStackQueryLayout />
+      </AuthProvider>
     </RootDocument>
   ),
 })

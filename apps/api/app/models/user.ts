@@ -3,6 +3,7 @@ import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import { ApiProperty } from '@foadonis/openapi/decorators'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -10,15 +11,19 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 })
 
 export default class User extends compose(BaseModel, AuthFinder) {
+  @ApiProperty()
   @column({ isPrimary: true })
   declare id: number
 
+  @ApiProperty()
   @column()
-  declare fullName: string | null
+  declare fullName: string
 
+  @ApiProperty()
   @column()
   declare email: string
 
+  @ApiProperty()
   @column({ serializeAs: null })
   declare password: string
 

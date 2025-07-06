@@ -1,0 +1,11 @@
+{
+  "success": "Succès",
+  "error": "Erreur",
+  "validation": {
+    "required": "Le champ {field} est requis",
+    "email": "Le champ {field} doit être un email valide",
+    "string": "Le champ {field} doit être une chaîne de caractères",
+    "min": "Le champ {field} doit contenir au moins {min} caractères"
+  },
+  "welcome": "Bienvenue dans l'application"
+} 

@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 
+import AuthHeader from './AuthHeader'
 import TanStackChatHeaderUser from '../integrations/tanchat/header-user.tsx'
 
 export default function Header() {
@@ -51,7 +52,8 @@ export default function Header() {
         </div>
       </nav>
 
-      <div>
+      <div className="flex items-center gap-4">
+        <AuthHeader />
         <TanStackChatHeaderUser />
       </div>
     </header>

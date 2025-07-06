@@ -1,0 +1,14 @@
+{
+  "login": {
+    "success": "Login successful",
+    "invalid_credentials": "Invalid credentials"
+  },
+  "logout": {
+    "success": "Logout successful",
+    "error": "Error during logout"
+  },
+  "check": {
+    "not_authenticated": "Not authenticated",
+    "user_authenticated": "User is authenticated"
+  }
+} 
