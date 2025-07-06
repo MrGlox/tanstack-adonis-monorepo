@@ -4,11 +4,11 @@ import { ApiOperation, ApiBody, ApiResponse } from '@foadonis/openapi/decorators
 import User from '#models/user'
 import { loginValidator } from '#validators/user'
 
-export default class SessionsController {
+export default class AuthenticationController {
   /**
-   * Login a user
+   * Authenticate a user (login)
    */
-  @ApiOperation({ summary: 'Login a user' })
+  @ApiOperation({ summary: 'Authenticate a user' })
   @ApiBody({ type: () => loginValidator })
   @ApiResponse({ type: User })
   async login({ request, auth, response, i18n }: HttpContext) {
@@ -33,7 +33,15 @@ export default class SessionsController {
    * Logout the current user
    */
   @ApiOperation({ summary: 'Logout the current user' })
-  @ApiResponse({ type: 'object' })
+  @ApiResponse({ 
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' }
+      }
+    }
+  })
   async logout({ auth, response, i18n }: HttpContext) {
     try {
       await auth.use('web').logout()
@@ -48,11 +56,21 @@ export default class SessionsController {
   }
 
   /**
-   * Check if user is authenticated
+   * Check authentication status
    */
   @ApiOperation({ summary: 'Check authentication status' })
-  @ApiResponse({ type: 'object' })
-  async check({ auth, response, i18n }: HttpContext) {
+  @ApiResponse({ 
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        isAuthenticated: { type: 'boolean' },
+        user: { type: 'object' }
+      }
+    }
+  })
+  async me({ auth, response, i18n }: HttpContext) {
     try {
       const user = auth.use('web').user
       
@@ -65,6 +83,48 @@ export default class SessionsController {
       
       return {
         message: i18n.t('sessions.check.user_authenticated'),
+        isAuthenticated: true,
+        user: user.serialize()
+      }
+    } catch (error) {
+      return response.status(401).json({
+        message: i18n.t('sessions.check.not_authenticated'),
+        isAuthenticated: false
+      })
+    }
+  }
+
+  /**
+   * Refresh user session (optional endpoint for future use)
+   */
+  @ApiOperation({ summary: 'Refresh user session' })
+  @ApiResponse({ 
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        isAuthenticated: { type: 'boolean' },
+        user: { type: 'object' }
+      }
+    }
+  })
+  async refresh({ auth, response, i18n }: HttpContext) {
+    try {
+      const user = auth.use('web').user
+      
+      if (!user) {
+        return response.status(401).json({
+          message: i18n.t('sessions.check.not_authenticated'),
+          isAuthenticated: false
+        })
+      }
+
+      // Refresh the session by getting fresh user data
+      await user.refresh()
+      
+      return {
+        message: 'Session refreshed successfully',
         isAuthenticated: true,
         user: user.serialize()
       }

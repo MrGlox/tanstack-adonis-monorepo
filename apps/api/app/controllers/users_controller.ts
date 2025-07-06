@@ -16,7 +16,7 @@ export default class UsersController {
   @ApiOperation({ summary: 'Create a new User' })
   @ApiBody({ type: () => createUserValidator })
   @ApiResponse({ type: User })
-  async create({ request, response, i18n }: HttpContext) {
+  async create({ request, response }: HttpContext) {
     try {
       const { fullName, email, password } = await request.validateUsing(createUserValidator)
       

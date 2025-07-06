@@ -4,13 +4,14 @@ import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { ApiProperty } from '@foadonis/openapi/decorators'
+import { Billable } from '@foadonis/shopkeeper/mixins'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
   passwordColumnName: 'password',
 })
 
-export default class User extends compose(BaseModel, AuthFinder) {
+export default class User extends compose(BaseModel, AuthFinder, Billable) {
   @ApiProperty()
   @column({ isPrimary: true })
   declare id: number

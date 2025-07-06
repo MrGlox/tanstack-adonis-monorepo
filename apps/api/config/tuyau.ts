@@ -5,11 +5,12 @@ const tuyauConfig = defineConfig({
     /**
      * Filters the definitions and named routes to be generated
      */
+    // Let Tuyau detect all routes first
     // definitions: {
-    //  only: [],
-    // }
+    //   only: [],
+    // },
     // routes: {
-    //  only: [],
+    //   only: [],
     // }
   }
 })

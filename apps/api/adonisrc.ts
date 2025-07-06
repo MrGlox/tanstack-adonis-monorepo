@@ -50,7 +50,8 @@ export default defineConfig({
     () => import('@adonisjs/auth/auth_provider'),
     () => import('@foadonis/shopkeeper/shopkeeper_provider'),
     () => import('@foadonis/openapi/openapi_provider'),
-    () => import('@tuyau/core/tuyau_provider')
+    () => import('@tuyau/core/tuyau_provider'),
+    () => import('@adonisjs/i18n/i18n_provider')
   ],
 
   /*
@@ -87,4 +88,8 @@ export default defineConfig({
     ],
     forceExit: false,
   },
+  metaFiles: [{
+    pattern: 'resources/lang/**/*.{json,yaml,yml}',
+    reloadServer: false,
+  }]
 })
