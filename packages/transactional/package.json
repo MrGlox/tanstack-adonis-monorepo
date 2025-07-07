@@ -1,0 +1,27 @@
+{
+  "name": "@repo/transactional",
+  "version": "1.0.0",
+  "description": "",
+  "main": "emails/MyEmail.tsx",
+  "exports": {
+    "./emails/MyEmail": "./emails/MyEmail.tsx",
+    "./MyEmail": "./emails/MyEmail.tsx"
+  },
+  "scripts": {
+    "dev": "email dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "react-email": "4.0.17"
+  },
+  "dependencies": {
+    "@react-email/components": "0.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

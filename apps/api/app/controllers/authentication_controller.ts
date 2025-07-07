@@ -6,6 +6,7 @@ import logger from '@adonisjs/core/services/logger'
 
 import User from '#models/user'
 import { loginValidator, createUserValidator } from '#validators/user'
+import { render } from '@react-email/render'
 
 export default class AuthenticationController {
   /**
@@ -55,12 +56,22 @@ export default class AuthenticationController {
         email: user.email.toLowerCase(),
       }, 'User automatically logged in after registration')
 
+      // Send verification email using React Email
+
+
       await mail.send((message) => {
         message
           .to(user.email)
           .from('info@example.org')
           .subject('Verify your email address')
-          .htmlView('emails/verify_email', { user })
+          .htmlView('#resources/views/emails/verify_email', {
+            user: {
+              fullName: user.fullName,
+              email: user.email
+            },
+            verificationUrl: 'https://example.com/verify',
+            appName: 'Your App'
+          })
       })
 
       return {
