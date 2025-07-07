@@ -5,17 +5,25 @@ services:
     environment:
       POSTGRES_DB: letme_cook
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  maildev:
+    image: maildev/maildev:latest
+    container_name: letme-cook-maildev
+    ports:
+      - "1080:1080" # Web interface
+      - "1025:1025" # SMTP server
+    restart: unless-stopped
+
 volumes:
-  postgres_data: 
+  postgres_data:

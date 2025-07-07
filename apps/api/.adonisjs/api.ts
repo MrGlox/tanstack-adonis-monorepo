@@ -7,7 +7,75 @@
 import type { MakeTuyauRequest, MakeTuyauResponse } from '@tuyau/utils/types'
 import type { InferInput } from '@vinejs/vine/types'
 
+type UsersGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/controllers/users_controller.ts').default['index'], false>
+}
+type UsersCreateGetHead = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/user.ts')['createUserValidator']>>
+  response: MakeTuyauResponse<import('../app/controllers/users_controller.ts').default['create'], true>
+}
+type AuthMeGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/controllers/authentication_controller.ts').default['me'], false>
+}
+type AuthRegisterPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/user.ts')['createUserValidator']>>
+  response: MakeTuyauResponse<import('../app/controllers/authentication_controller.ts').default['register'], true>
+}
+type AuthLoginPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/validators/user.ts')['loginValidator']>>
+  response: MakeTuyauResponse<import('../app/controllers/authentication_controller.ts').default['login'], true>
+}
+type AuthLogoutPost = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/controllers/authentication_controller.ts').default['logout'], false>
+}
+type AuthRefreshPost = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/controllers/authentication_controller.ts').default['refresh'], false>
+}
 export interface ApiDefinition {
+  'users': {
+    '$url': {
+    };
+    '$get': UsersGetHead;
+    '$head': UsersGetHead;
+    'create': {
+      '$url': {
+      };
+      '$get': UsersCreateGetHead;
+      '$head': UsersCreateGetHead;
+    };
+  };
+  'auth': {
+    'me': {
+      '$url': {
+      };
+      '$get': AuthMeGetHead;
+      '$head': AuthMeGetHead;
+    };
+    'register': {
+      '$url': {
+      };
+      '$post': AuthRegisterPost;
+    };
+    'login': {
+      '$url': {
+      };
+      '$post': AuthLoginPost;
+    };
+    'logout': {
+      '$url': {
+      };
+      '$post': AuthLogoutPost;
+    };
+    'refresh': {
+      '$url': {
+      };
+      '$post': AuthRefreshPost;
+    };
+  };
 }
 const routes = [
   {
@@ -15,6 +83,55 @@ const routes = [
     name: 'shopkeeper.webhook',
     path: '/stripe/webhook',
     method: ["POST"],
+    types: {} as unknown,
+  },
+  {
+    params: [],
+    name: 'users.index',
+    path: '/users',
+    method: ["GET","HEAD"],
+    types: {} as UsersGetHead,
+  },
+  {
+    params: [],
+    name: 'users.create',
+    path: '/users/create',
+    method: ["GET","HEAD"],
+    types: {} as UsersCreateGetHead,
+  },
+  {
+    params: [],
+    name: 'users.store',
+    path: '/users',
+    method: ["POST"],
+    types: {} as unknown,
+  },
+  {
+    params: ["id"],
+    name: 'users.show',
+    path: '/users/:id',
+    method: ["GET","HEAD"],
+    types: {} as unknown,
+  },
+  {
+    params: ["id"],
+    name: 'users.edit',
+    path: '/users/:id/edit',
+    method: ["GET","HEAD"],
+    types: {} as unknown,
+  },
+  {
+    params: ["id"],
+    name: 'users.update',
+    path: '/users/:id',
+    method: ["PUT","PATCH"],
+    types: {} as unknown,
+  },
+  {
+    params: ["id"],
+    name: 'users.destroy',
+    path: '/users/:id',
+    method: ["DELETE"],
     types: {} as unknown,
   },
 ] as const;

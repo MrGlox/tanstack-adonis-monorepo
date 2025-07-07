@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import mail from '@adonisjs/mail/services/main'
 import { ApiOperation, ApiBody, ApiResponse } from '@foadonis/openapi/decorators'
 
 import User from '#models/user'
@@ -37,6 +38,14 @@ export default class UsersController {
         fullName,
         email,
         password
+      })
+
+      await mail.send((message) => {
+        message
+          .to(user.email)
+          .from('info@example.org')
+          .subject('Verify your email address')
+          .htmlView('emails/verify_email', { user })
       })
       
       return response.status(201).json({

@@ -1,4 +1,9 @@
 {
+  "register": {
+    "success": "Registration successful",
+    "failed": "Registration failed",
+    "email_already_exists": "Email address is already registered"
+  },
   "login": {
     "success": "Login successful",
     "invalid_credentials": "Invalid credentials"
@@ -10,5 +15,8 @@
   "check": {
     "not_authenticated": "Not authenticated",
     "user_authenticated": "User is authenticated"
+  },
+  "refresh": {
+    "success": "Session refreshed successfully"
   }
 } 

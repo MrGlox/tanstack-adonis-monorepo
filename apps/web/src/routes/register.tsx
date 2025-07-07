@@ -1,78 +1,93 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm } from '@tanstack/react-form'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/contexts/auth-context'
+import { tuyau } from '@/lib/tuyau'
+
+// Validation schema
+const registerSchema = z.object({
+  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
+
+type RegisterFormData = z.infer<typeof registerSchema>
 
 export const Route = createFileRoute('/register')({
   component: RegisterPage,
+  beforeLoad: async () => {
+    try {
+      const { data, error } = await tuyau.auth.me.$get()
+      if (!error) {
+        // User is already authenticated, redirect to home
+        throw new Error('Already authenticated')
+      }
+    } catch {
+      // User is not authenticated, which is expected for register page
+    }
+  },
 })
 
 function RegisterPage() {
   const navigate = useNavigate()
-  const { register } = useAuth()
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-  })
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string>('')
+  const queryClient = useQueryClient()
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    if (name === 'confirmPassword') {
-      setConfirmPassword(value)
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-      }))
-    }
-  }
+  // Register mutation
+  const { mutate, error, isPending } = useMutation({
+    mutationFn: async (formData: RegisterFormData) => {
+      // Make the API call using tuyau
+      const { data, error } = await tuyau.auth.register.$post({
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      })
 
-  const validateForm = (): string | null => {
-    if (!formData.fullName.trim()) {
-      return 'Le nom complet est requis'
-    }
-    if (!formData.email.trim()) {
-      return 'L\'email est requis'
-    }
-    if (formData.password.length < 6) {
-      return 'Le mot de passe doit contenir au moins 6 caractères'
-    }
-    if (formData.password !== confirmPassword) {
-      return 'Les mots de passe ne correspondent pas'
-    }
-    return null
-  }
+      if (error) {
+        // Handle different error types from tuyau
+        if (error.value && typeof error.value === 'object' && 'message' in error.value) {
+          throw new Error(error.value.message as string)
+        }
+        throw new Error('Registration failed')
+      }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError('')
+      return data
+    },
+    onSuccess: () => {
+      // Invalidate and refetch user queries
+      queryClient.invalidateQueries({ queryKey: ['user'] })
 
-    const validationError = validateForm()
-    if (validationError) {
-      setError(validationError)
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      await register(formData.fullName, formData.email, formData.password)
-      
-      // Redirect to home page or show success message
+      // Navigate to dashboard or home
       navigate({ to: '/' })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during registration')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    },
+  })
+
+  // Form setup
+  const form = useForm({
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    onSubmit: async ({ value }) => {
+      // Validate the form data
+      const validationResult = registerSchema.safeParse(value)
+      if (!validationResult.success) {
+        // Handle validation errors if needed
+        return
+      }
+      mutate(value)
+    },
+  })
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
@@ -83,82 +98,163 @@ function RegisterPage() {
             Rejoignez-nous en créant votre compte
           </CardDescription>
         </CardHeader>
-        
-        <form onSubmit={handleSubmit}>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            form.handleSubmit()
+          }}
+        >
           <CardContent className="space-y-4">
             {error && (
               <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md dark:bg-red-900/10 dark:border-red-900/20 dark:text-red-400">
-                {error}
+                {error.message}
               </div>
             )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nom complet</Label>
-              <Input
-                id="fullName"
-                name="fullName"
-                type="text"
-                placeholder="Votre nom complet"
-                value={formData.fullName}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="votre@email.com"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Votre mot de passe (min. 6 caractères)"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-                minLength={6}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirmez votre mot de passe"
-                value={confirmPassword}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
+
+            <form.Field
+              name="fullName"
+              validators={{
+                onBlur: ({ value }) => {
+                  const result = z.string().min(2, 'Full name must be at least 2 characters').safeParse(value)
+                  return result.success ? undefined : result.error.errors[0].message
+                },
+              }}
+            >
+              {(field) => (
+                <div className="space-y-2">
+                  <Label htmlFor={field.name}>Nom complet</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="text"
+                    placeholder="Votre nom complet"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    required
+                    disabled={isPending}
+                  />
+                  {field.state.meta.errors && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {field.state.meta.errors.join(', ')}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <form.Field
+              name="email"
+              validators={{
+                onBlur: ({ value }) => {
+                  const result = z.string().email('Please enter a valid email').safeParse(value)
+                  return result.success ? undefined : result.error.errors[0].message
+                },
+              }}
+            >
+              {(field) => (
+                <div className="space-y-2">
+                  <Label htmlFor={field.name}>Email</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="email"
+                    placeholder="votre@email.com"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    required
+                    disabled={isPending}
+                  />
+                  {field.state.meta.errors && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {field.state.meta.errors.join(', ')}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <form.Field
+              name="password"
+              validators={{
+                onBlur: ({ value }) => {
+                  const result = z.string().min(6, 'Password must be at least 6 characters').safeParse(value)
+                  return result.success ? undefined : result.error.errors[0].message
+                },
+              }}
+            >
+              {(field) => (
+                <div className="space-y-2">
+                  <Label htmlFor={field.name}>Mot de passe</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="password"
+                    placeholder="Votre mot de passe (min. 6 caractères)"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    required
+                    disabled={isPending}
+                  />
+                  {field.state.meta.errors && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {field.state.meta.errors.join(', ')}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <form.Field
+              name="confirmPassword"
+              validators={{
+                onBlur: ({ value }) => {
+                  const passwordValue = form.getFieldValue('password')
+                  if (value !== passwordValue) {
+                    return "Passwords don't match"
+                  }
+                  const result = z.string().min(1, 'Please confirm your password').safeParse(value)
+                  return result.success ? undefined : result.error.errors[0].message
+                },
+              }}
+            >
+              {(field) => (
+                <div className="space-y-2">
+                  <Label htmlFor={field.name}>Confirmer le mot de passe</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="password"
+                    placeholder="Confirmez votre mot de passe"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    required
+                    disabled={isPending}
+                  />
+                  {field.state.meta.errors && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {field.state.meta.errors.join(', ')}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
           </CardContent>
-          
+
           <CardFooter className="flex flex-col space-y-4">
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? 'Création...' : 'Créer mon compte'}
+              {isPending ? 'Création...' : 'Créer mon compte'}
             </Button>
-            
+
             <div className="text-center text-sm text-gray-600 dark:text-gray-400">
               Vous avez déjà un compte ?{' '}
               <Link

@@ -1,11 +1,11 @@
 {
-  "name": "api",
+  "name": "@repo/api",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
   "exports": {
-    "./api": "./.adonisjs/index.ts"
+    "./tuyau": "./.adonisjs/index.ts"
   },
   "scripts": {
     "start": "node bin/server.js",
@@ -60,6 +60,7 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/i18n": "^2.2.1",
     "@adonisjs/lucid": "^21.6.1",
+    "@adonisjs/mail": "^9.2.2",
     "@adonisjs/session": "^7.5.1",
     "@foadonis/openapi": "^0.3.5",
     "@foadonis/shopkeeper": "^0.1.6",

@@ -1,4 +1,9 @@
 {
+  "register": {
+    "success": "Registro exitoso",
+    "failed": "Registro fallido",
+    "email_already_exists": "La dirección de correo electrónico ya está registrada"
+  },
   "login": {
     "success": "Inicio de sesión exitoso",
     "invalid_credentials": "Credenciales inválidas"
@@ -9,6 +14,9 @@
   },
   "check": {
     "not_authenticated": "No autenticado",
-    "user_authenticated": "Usuario está autenticado"
+    "user_authenticated": "Usuario autenticado"
+  },
+  "refresh": {
+    "success": "Sesión actualizada exitosamente"
   }
 } 

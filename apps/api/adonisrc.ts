@@ -25,7 +25,7 @@ export default defineConfig({
   | will be scanned automatically from the "./commands" directory.
   |
   */
-  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands'), () => import('@foadonis/shopkeeper/commands'), () => import('@tuyau/core/commands')],
+  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands'), () => import('@foadonis/shopkeeper/commands'), () => import('@tuyau/core/commands'), () => import('@adonisjs/mail/commands')],
 
   /*
   |--------------------------------------------------------------------------
@@ -51,7 +51,8 @@ export default defineConfig({
     () => import('@foadonis/shopkeeper/shopkeeper_provider'),
     () => import('@foadonis/openapi/openapi_provider'),
     () => import('@tuyau/core/tuyau_provider'),
-    () => import('@adonisjs/i18n/i18n_provider')
+    () => import('@adonisjs/i18n/i18n_provider'),
+    () => import('@adonisjs/mail/mail_provider')
   ],
 
   /*
